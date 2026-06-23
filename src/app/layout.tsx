@@ -17,7 +17,6 @@ export const metadata: Metadata = {
     icon: [
       { url: "/icons/bus-track-192.png", sizes: "192x192", type: "image/png" },
       { url: "/icons/bus-track-512.png", sizes: "512x512", type: "image/png" },
-      { url: "/icons/bus-track.svg", type: "image/svg+xml" },
     ],
     apple: "/icons/bus-track-192.png",
   },

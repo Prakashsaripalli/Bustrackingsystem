@@ -104,6 +104,172 @@ interface EtaState {
   source:  "blended" | "routing" | "stopped";
 }
 
+interface PhoneSimulatorWrapperProps {
+  children: React.ReactNode;
+  isSimulatorMode: boolean;
+  setIsSimulatorMode: (val: boolean) => void;
+  statusTime: string;
+  activeNotification: {
+    title: string;
+    message: string;
+    type: "emergency" | "combine" | "proximity";
+    timestamp: Date;
+  } | null;
+  setActiveNotification: (val: any) => void;
+}
+
+function PhoneSimulatorWrapper({
+  children,
+  isSimulatorMode,
+  setIsSimulatorMode,
+  statusTime,
+  activeNotification,
+  setActiveNotification,
+}: PhoneSimulatorWrapperProps) {
+  if (isSimulatorMode) {
+    return (
+      <div className="min-h-screen bg-[#0F172A] flex flex-col md:flex-row items-center justify-center p-0 md:p-8 gap-8 transition-all duration-500 overflow-x-hidden relative">
+        {/* Side Controls Panel (Only on desktop) */}
+        <div className="hidden md:flex w-[320px] bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-3xl p-6 text-white flex-col justify-between shrink-0 shadow-2xl self-stretch">
+          <div className="space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#F27A35] to-[#2563EB] p-0.5 shadow-md flex items-center justify-center">
+                <img src="/aditya-logo.png" alt="Aditya" className="w-full h-full object-contain p-0.5 bg-white rounded-[14px]" />
+              </div>
+              <div>
+                <h2 className="font-black text-lg tracking-tight leading-none text-white">ADITYA APP</h2>
+                <span className="text-[9px] text-slate-400 font-extrabold uppercase tracking-widest mt-1 inline-block">Device Simulator</span>
+              </div>
+            </div>
+
+            <div className="border-t border-slate-800/80 my-4 pt-4 space-y-4">
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Experience the Aditya University bus tracking interface as a native mobile application.
+              </p>
+              <div className="bg-slate-950/60 rounded-2xl p-4 border border-slate-800 space-y-3">
+                <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">✨ Simulator Specs</h3>
+                <ul className="text-xs text-slate-400 space-y-2 list-none pl-0">
+                  <li className="flex items-center gap-2">📱 <span className="text-slate-300 font-medium">Responsive Layout</span></li>
+                  <li className="flex items-center gap-2">⏰ <span className="text-slate-300 font-medium">Live Status Clock</span></li>
+                  <li className="flex items-center gap-2">🔔 <span className="text-slate-300 font-medium">App-style Push Alerts</span></li>
+                  <li className="flex items-center gap-2">🎵 <span className="text-slate-300 font-medium">Native Audio Chime</span></li>
+                </ul>
+              </div>
+              <div className="bg-blue-500/10 rounded-2xl p-4 border border-blue-500/20 text-xs text-blue-300 leading-relaxed">
+                <strong>📍 Proximity Alert:</strong> Tests bus proximity. A slide-down banner notification is automatically triggered when the active bus enters a 5 km radius of your boarding stop in the morning.
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setIsSimulatorMode(false)}
+            className="w-full bg-gradient-to-r from-[#2563EB] to-[#3B82F6] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold py-3 rounded-xl transition-all shadow-md shadow-blue-500/20 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+          >
+            🖥️ Switch to Full Desktop View
+          </button>
+        </div>
+
+        {/* Smartphone mockup device wrapper */}
+        <div className="relative w-full h-screen md:w-[395px] md:h-[844px] bg-slate-950 md:rounded-[55px] md:border-[12px] md:border-slate-800 md:shadow-2xl overflow-hidden flex flex-col shrink-0">
+          {/* Dynamic Island / Bezel notch (Desktop only) */}
+          <div className="hidden md:flex absolute top-3 left-1/2 -translate-x-1/2 w-28 h-5.5 bg-black rounded-full z-50 items-center justify-center border border-slate-900">
+            <div className="w-2.5 h-2.5 bg-slate-900 rounded-full mr-2.5 animate-pulse" />
+            <div className="w-1.5 h-1.5 bg-slate-900 rounded-full" />
+          </div>
+
+          {/* Top Status Bar */}
+          <div className="h-11 bg-slate-950 text-white px-6 pt-3.5 flex items-center justify-between text-[11px] font-bold select-none z-40 shrink-0">
+            <div>{statusTime}</div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] tracking-tighter opacity-80">5G</span>
+              <span className="text-[10px]">📶</span>
+              <span className="flex items-center gap-0.5 text-[9px]">89% 🔋</span>
+            </div>
+          </div>
+
+          {/* Phone Screen Viewer */}
+          <div className="flex-1 bg-[#F1F5F9] overflow-hidden relative flex flex-col rounded-b-[40px] md:rounded-b-[0px]">
+            {/* Slide Down App Push Notification Overlay */}
+            {activeNotification && (
+              <div className="absolute top-2 left-3 right-3 z-50 transition-all duration-300 animate-slide-up pointer-events-auto">
+                <div className="bg-white/95 backdrop-blur-md border border-[#DBEAFE] rounded-2xl p-3.5 shadow-2xl flex gap-3 items-start relative border-l-4 border-l-[#2563EB] hover:scale-[1.01] transition-transform">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#F27A35] to-[#2563EB] p-0.5 shadow-sm shrink-0 flex items-center justify-center">
+                    <img src="/aditya-logo.png" alt="Aditya" className="w-full h-full object-contain p-0.5 bg-white rounded-[9px]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] text-[#2563EB] font-extrabold uppercase tracking-wide">BusTrack Live</span>
+                      <span className="text-[9px] text-gray-400 font-semibold">now</span>
+                    </div>
+                    <p className="text-xs font-black text-slate-800 mt-0.5">{activeNotification.title}</p>
+                    <p className="text-[10px] text-gray-500 leading-relaxed mt-0.5">{activeNotification.message}</p>
+                  </div>
+                  <button 
+                    onClick={() => setActiveNotification(null)}
+                    className="w-5 h-5 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-xs text-gray-400 hover:text-gray-600 transition-colors shrink-0 cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Inner Dashboard Content */}
+            <div className="flex-1 overflow-y-auto scrollbar-none flex flex-col relative h-full">
+              {children}
+            </div>
+
+            {/* Home swipe indicator bar (Desktop only) */}
+            <div className="hidden md:block absolute bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-400 rounded-full z-50 opacity-40 pointer-events-none" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Fullscreen view
+  return (
+    <div className="min-h-screen bg-[#F1F5F9] relative">
+      {/* Floating simulator activator (Desktop only) */}
+      <div className="hidden md:block fixed bottom-6 right-6 z-50">
+        <button
+          onClick={() => setIsSimulatorMode(true)}
+          className="bg-slate-900 border border-slate-800 text-white font-bold px-5 py-3 rounded-2xl hover:bg-slate-800 active:scale-95 transition-all shadow-xl flex items-center gap-2 cursor-pointer hover:scale-[1.02]"
+        >
+          📱 Switch to Mobile Simulator
+        </button>
+      </div>
+
+      {/* Push Notification Banner Overlay for fullscreen view */}
+      {activeNotification && (
+        <div className="fixed top-4 right-4 w-full max-w-sm z-50 transition-all duration-300 animate-slide-up pointer-events-auto">
+          <div className="bg-white border-2 border-blue-100 rounded-2xl p-4 shadow-2xl flex gap-3 items-start relative border-l-4 border-l-[#2563EB]">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#F27A35] to-[#2563EB] p-0.5 shadow-sm shrink-0 flex items-center justify-center">
+              <img src="/aditya-logo.png" alt="Aditya" className="w-full h-full object-contain p-0.5 bg-white rounded-[9px]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-[#2563EB] font-extrabold uppercase tracking-wide">BusTrack Live</span>
+                <span className="text-[9px] text-gray-400 font-semibold">now</span>
+              </div>
+              <p className="text-sm font-black text-slate-800 mt-0.5">{activeNotification.title}</p>
+              <p className="text-xs text-gray-500 leading-relaxed mt-0.5">{activeNotification.message}</p>
+            </div>
+            <button 
+              onClick={() => setActiveNotification(null)}
+              className="w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-xs text-gray-400 hover:text-gray-600 transition-colors shrink-0 cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {children}
+    </div>
+  );
+}
+
 export default function StudentDashboard() {
   const { user, isAuthenticated, loading: authLoading, logout, token, updateUser, login, register } = useAuth();
   const [pageTab, setPageTab] = useState<PageTab>("mybus");
@@ -137,6 +303,83 @@ export default function StudentDashboard() {
   const [alerts, setAlerts] = useState<AlertNotification[]>([]);
   const [showAlerts, setShowAlerts] = useState(false);
   const [seenAlertKeys, setSeenAlertKeys] = useState<Set<string>>(new Set());
+
+  /* ─ simulator UI & native notifications ─ */
+  const [isSimulatorMode, setIsSimulatorMode] = useState(true);
+  const [statusTime, setStatusTime] = useState("");
+  const [activeNotification, setActiveNotification] = useState<{
+    title: string;
+    message: string;
+    type: "emergency" | "combine" | "proximity";
+    timestamp: Date;
+  } | null>(null);
+  const notificationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const playChime = useCallback(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const now = ctx.currentTime;
+      
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      osc1.type = "sine";
+      osc1.frequency.setValueAtTime(587.33, now); // D5
+      osc1.frequency.exponentialRampToValueAtTime(880, now + 0.12); // A5
+      
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(880, now + 0.12);
+      osc2.frequency.exponentialRampToValueAtTime(1174.66, now + 0.24); // D6
+      
+      gainNode.gain.setValueAtTime(0.12, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+      
+      osc1.connect(gainNode);
+      osc2.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      osc1.start(now);
+      osc1.stop(now + 0.2);
+      osc2.start(now + 0.12);
+      osc2.stop(now + 0.35);
+    } catch (e) {
+      console.error("Audio Context failed:", e);
+    }
+  }, []);
+
+  const triggerAppNotification = useCallback((title: string, message: string, type: "emergency" | "combine" | "proximity") => {
+    setActiveNotification({ title, message, type, timestamp: new Date() });
+    playChime();
+    if (notificationTimeoutRef.current) clearTimeout(notificationTimeoutRef.current);
+    notificationTimeoutRef.current = setTimeout(() => {
+      setActiveNotification(null);
+    }, 6000);
+  }, [playChime]);
+
+  // Update clock for status bar
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      setStatusTime(`${hours}:${minutes} ${ampm}`);
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Cleanup notification timer
+  useEffect(() => {
+    return () => {
+      if (notificationTimeoutRef.current) clearTimeout(notificationTimeoutRef.current);
+    };
+  }, []);
 
   /* ─ my bus tracking ─ */
   const [myBusLoc,         setMyBusLoc]         = useState<BusLoc|null>(null);
@@ -423,6 +666,7 @@ export default function StudentDashboard() {
       const normalized = normalizeAlert(data);
       setAlerts(prev => [normalized, ...prev.filter(alert => alert.id !== data.id)].slice(0, 50));
       showWebNotification(normalized.title, normalized.message);
+      triggerAppNotification(normalized.title, normalized.message, "emergency");
     };
 
     const onBusCombined = (data: any) => {
@@ -431,6 +675,7 @@ export default function StudentDashboard() {
       setAlerts(prev => [normalized, ...prev.filter(alert => alert.id !== data.id)].slice(0, 50));
       setActiveBusIds(prev => user?.assignedBusId && !prev.includes(user.assignedBusId) ? [...prev, user.assignedBusId] : prev);
       showWebNotification(normalized.title, normalized.message);
+      triggerAppNotification(normalized.title, normalized.message, "combine");
     };
 
     const onAlertResolved = (data: any) => {
@@ -608,6 +853,26 @@ export default function StudentDashboard() {
       ]).then(([toStop, toCampus]) => {
         if (toStop)   setEtaToMyStop  ({ distKm: toStop.distKm,   etaMin: toStop.etaMin,   speedKmh: toStop.speedKmh,   source: toStop.source });
         if (toCampus) setEtaToCampus  ({ distKm: toCampus.distKm, etaMin: toCampus.etaMin, speedKmh: toCampus.speedKmh, source: toCampus.source });
+        
+        // 5 km Proximity Notification (Morning Only: 5 AM - 12 PM)
+        const distKm = toStop ? toStop.distKm : (distBusToMyStop / 1000);
+        if (distKm <= 5.0) {
+          const now = new Date();
+          const hr = now.getHours();
+          if (hr >= 5 && hr < 12) {
+            const todayStr = now.toDateString();
+            const lastNotified = localStorage.getItem(`lastProximityAlertDate_${user?.id || "guest"}`);
+            if (lastNotified !== todayStr) {
+              localStorage.setItem(`lastProximityAlertDate_${user?.id || "guest"}`, todayStr);
+              triggerAppNotification(
+                "🚍 Bus Approaching!",
+                `Bus ${myBusLoc.busId} is within 5.0 km of your boarding stop (${boardingStop.name}).`,
+                "proximity"
+              );
+            }
+          }
+        }
+
         setEtaLoading(false);
         etaComputingRef.current = false;
       }).catch(() => { setEtaLoading(false); etaComputingRef.current = false; });
@@ -752,198 +1017,206 @@ export default function StudentDashboard() {
     const availableStops = selectedBus?.route?.stops ?? [];
 
     return (
-      <div className="min-h-screen bg-[#F1F5F9]">
-        {/* Header */}
-        <header className="glass border-b border-[#DBEAFE] sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center bg-white border border-gray-100 shadow-sm">
-                  <img src="/aditya-logo.png" alt="Aditya University Logo" className="w-full h-full object-contain p-0.5" />
+      <PhoneSimulatorWrapper
+        isSimulatorMode={isSimulatorMode}
+        setIsSimulatorMode={setIsSimulatorMode}
+        statusTime={statusTime}
+        activeNotification={activeNotification}
+        setActiveNotification={setActiveNotification}
+      >
+        <div className="min-h-full bg-[#F1F5F9] pb-8">
+          {/* Header */}
+          <header className="glass border-b border-[#DBEAFE] sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+              <div className="flex items-center justify-between h-16">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center bg-white border border-gray-100 shadow-sm">
+                    <img src="/aditya-logo.png" alt="Aditya University Logo" className="w-full h-full object-contain p-0.5" />
+                  </div>
+                  <div>
+                    <h1 className="text-lg font-extrabold tracking-wide"><span className="text-[#F27A35]">ADITYA</span> <span className="text-[#2563EB]">UNIVERSITY</span></h1>
+                    <p className="text-xs text-gray-500">Not Signed In</p>
+                  </div>
                 </div>
-                <div>
-                  <h1 className="text-lg font-extrabold tracking-wide"><span className="text-[#F27A35]">ADITYA</span> <span className="text-[#2563EB]">UNIVERSITY</span></h1>
-                  <p className="text-xs text-gray-500">Not Signed In</p>
-                </div>
+                <a href="/" className="text-sm text-[#2563EB] font-medium hover:underline">Home</a>
               </div>
-              <a href="/" className="text-sm text-[#2563EB] font-medium hover:underline">Home</a>
             </div>
-          </div>
-        </header>
+          </header>
 
-        {/* Content */}
-        <div className="max-w-md mx-auto px-4 py-12 animate-slide-up">
-          <div className="glass-solid rounded-2xl p-8 shadow-2xl relative">
-            <div className="text-center mb-6">
-              <div className="w-14 h-14 bg-gradient-to-br from-[#2563EB] to-[#3B82F6] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-200">
-                <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
-              </div>
-              <h2 className="text-2xl font-bold text-[#1E293B]">
-                {isRegisterMode ? "Student Registration" : "Student Login"}
-              </h2>
-              <p className="text-gray-500 text-sm mt-1">
-                {isRegisterMode ? "Create an account to track your university bus" : "Sign in to track your bus in real time"}
-              </p>
-            </div>
-
-            <form onSubmit={handleStudentSubmit} className="space-y-4">
-              {loginError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
-                  {loginError}
+          {/* Content */}
+          <div className="max-w-md mx-auto px-4 py-12 animate-slide-up">
+            <div className="glass-solid rounded-2xl p-8 shadow-2xl relative">
+              <div className="text-center mb-6">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#2563EB] to-[#3B82F6] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-200">
+                  <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
                 </div>
-              )}
+                <h2 className="text-2xl font-bold text-[#1E293B]">
+                  {isRegisterMode ? "Student Registration" : "Student Login"}
+                </h2>
+                <p className="text-gray-500 text-sm mt-1">
+                  {isRegisterMode ? "Create an account to track your university bus" : "Sign in to track your bus in real time"}
+                </p>
+              </div>
 
-              {isRegisterMode ? (
-                /* Registration Fields */
-                <div className="space-y-3">
-                  <div className="bg-[#F8FAFC] rounded-xl p-3 space-y-2 border border-gray-100">
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Personal Details</p>
-                    <input
-                      type="text"
-                      placeholder="Full Name *"
-                      value={regName}
-                      onChange={e => setRegName(e.target.value)}
-                      className="input-field"
-                      required
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email Address *"
-                      value={regEmail}
-                      onChange={e => setRegEmail(e.target.value)}
-                      className="input-field"
-                      required
-                    />
-                    <input
-                      type="password"
-                      placeholder="Password *"
-                      value={regPassword}
-                      onChange={e => setRegPassword(e.target.value)}
-                      className="input-field"
-                      required
-                    />
-                    <div className="grid grid-cols-2 gap-2">
-                      <input
-                        type="tel"
-                        placeholder="Phone Number"
-                        value={regPhone}
-                        onChange={e => setRegPhone(e.target.value)}
-                        className="input-field"
-                      />
+              <form onSubmit={handleStudentSubmit} className="space-y-4">
+                {loginError && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+                    {loginError}
+                  </div>
+                )}
+
+                {isRegisterMode ? (
+                  /* Registration Fields */
+                  <div className="space-y-3">
+                    <div className="bg-[#F8FAFC] rounded-xl p-3 space-y-2 border border-gray-100">
+                      <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Personal Details</p>
                       <input
                         type="text"
-                        placeholder="Student ID / Roll No"
-                        value={regStudentId}
-                        onChange={e => setRegStudentId(e.target.value)}
+                        placeholder="Full Name *"
+                        value={regName}
+                        onChange={e => setRegName(e.target.value)}
+                        className="input-field"
+                        required
+                      />
+                      <input
+                        type="email"
+                        placeholder="Email Address *"
+                        value={regEmail}
+                        onChange={e => setRegEmail(e.target.value)}
+                        className="input-field"
+                        required
+                      />
+                      <input
+                        type="password"
+                        placeholder="Password *"
+                        value={regPassword}
+                        onChange={e => setRegPassword(e.target.value)}
+                        className="input-field"
+                        required
+                      />
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="tel"
+                          placeholder="Phone Number"
+                          value={regPhone}
+                          onChange={e => setRegPhone(e.target.value)}
+                          className="input-field"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Student ID / Roll No"
+                          value={regStudentId}
+                          onChange={e => setRegStudentId(e.target.value)}
+                          className="input-field"
+                        />
+                      </div>
+                      <input
+                        type="tel"
+                        placeholder="Parent Contact Number"
+                        value={regParentContact}
+                        onChange={e => setRegParentContact(e.target.value)}
                         className="input-field"
                       />
                     </div>
-                    <input
-                      type="tel"
-                      placeholder="Parent Contact Number"
-                      value={regParentContact}
-                      onChange={e => setRegParentContact(e.target.value)}
-                      className="input-field"
-                    />
-                  </div>
 
-                  <div className="bg-[#EFF6FF] border border-[#DBEAFE] rounded-xl p-3 space-y-2">
-                    <p className="text-xs font-bold text-[#2563EB] uppercase tracking-wide">🚍 Bus Assignment</p>
-                    <input
-                      type="text"
-                      placeholder="Your Village / Area *"
-                      value={regVillage}
-                      onChange={e => setRegVillage(e.target.value)}
-                      className="input-field"
-                      required
-                    />
-                    <select
-                      className="input-field"
-                      value={regBusId}
-                      onChange={e => { setRegBusId(e.target.value); setRegBoardingStop(""); }}
-                    >
-                      <option value="">— Select your bus (optional) —</option>
-                      {buses.map(b => (
-                        <option key={b.busId} value={b.busId}>
-                          {b.busId} · {b.route?.stops?.join(" → ") ?? ""}
-                        </option>
-                      ))}
-                    </select>
-
-                    {regBusId && availableStops.length > 0 && (
+                    <div className="bg-[#EFF6FF] border border-[#DBEAFE] rounded-xl p-3 space-y-2">
+                      <p className="text-xs font-bold text-[#2563EB] uppercase tracking-wide">🚍 Bus Assignment</p>
+                      <input
+                        type="text"
+                        placeholder="Your Village / Area *"
+                        value={regVillage}
+                        onChange={e => setRegVillage(e.target.value)}
+                        className="input-field"
+                        required
+                      />
                       <select
                         className="input-field"
-                        value={regBoardingStop}
-                        onChange={e => setRegBoardingStop(e.target.value)}
+                        value={regBusId}
+                        onChange={e => { setRegBusId(e.target.value); setRegBoardingStop(""); }}
                       >
-                        <option value="">— Select your boarding stop —</option>
-                        {availableStops.map((s, i) => <option key={i} value={s}>{s}</option>)}
+                        <option value="">— Select your bus (optional) —</option>
+                        {buses.map(b => (
+                          <option key={b.busId} value={b.busId}>
+                            {b.busId} · {b.route?.stops?.join(" → ") ?? ""}
+                          </option>
+                        ))}
                       </select>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                /* Login Fields */
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Email Address</label>
-                    <input
-                      type="email"
-                      placeholder="email@domain.com"
-                      value={loginEmail}
-                      onChange={e => setLoginEmail(e.target.value)}
-                      className="input-field"
-                      required
-                    />
-                  </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Password</label>
-                    <input
-                      type="password"
-                      placeholder="••••••••"
-                      value={loginPassword}
-                      onChange={e => setLoginPassword(e.target.value)}
-                      className="input-field"
-                      required
-                    />
+                      {regBusId && availableStops.length > 0 && (
+                        <select
+                          className="input-field"
+                          value={regBoardingStop}
+                          onChange={e => setRegBoardingStop(e.target.value)}
+                        >
+                          <option value="">— Select your boarding stop —</option>
+                          {availableStops.map((s, i) => <option key={i} value={s}>{s}</option>)}
+                        </select>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={loginLoading}
-                className="btn-primary w-full text-base py-3 disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {loginLoading ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                    </svg>
-                    Processing…
-                  </>
                 ) : (
-                  isRegisterMode ? "Create Account" : "Sign In"
-                )}
-              </button>
-            </form>
+                  /* Login Fields */
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Email Address</label>
+                      <input
+                        type="email"
+                        placeholder="email@domain.com"
+                        value={loginEmail}
+                        onChange={e => setLoginEmail(e.target.value)}
+                        className="input-field"
+                        required
+                      />
+                    </div>
 
-            <div className="mt-6 text-center">
-              <button
-                type="button"
-                onClick={() => { setIsRegisterMode(!isRegisterMode); setLoginError(""); }}
-                className="text-sm text-[#2563EB] font-semibold hover:underline"
-              >
-                {isRegisterMode ? "Already have an account? Sign In" : "New student? Register here"}
-              </button>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Password</label>
+                      <input
+                        type="password"
+                        placeholder="••••••••"
+                        value={loginPassword}
+                        onChange={e => setLoginPassword(e.target.value)}
+                        className="input-field"
+                        required
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loginLoading}
+                  className="btn-primary w-full text-base py-3 disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {loginLoading ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                      </svg>
+                      Processing…
+                    </>
+                  ) : (
+                    isRegisterMode ? "Create Account" : "Sign In"
+                  )}
+                </button>
+              </form>
+
+              <div className="mt-6 text-center">
+                <button
+                  type="button"
+                  onClick={() => { setIsRegisterMode(!isRegisterMode); setLoginError(""); }}
+                  className="text-sm text-[#2563EB] font-semibold hover:underline"
+                >
+                  {isRegisterMode ? "Already have an account? Sign In" : "New student? Register here"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </PhoneSimulatorWrapper>
     );
   }
 
@@ -974,7 +1247,14 @@ export default function StudentDashboard() {
      RENDER
   ════════════════════════════════════════ */
   return (
-    <div className="min-h-screen bg-[#F1F5F9]">
+    <PhoneSimulatorWrapper
+      isSimulatorMode={isSimulatorMode}
+      setIsSimulatorMode={setIsSimulatorMode}
+      statusTime={statusTime}
+      activeNotification={activeNotification}
+      setActiveNotification={setActiveNotification}
+    >
+      <div className="min-h-full bg-[#F1F5F9]">
 
       {/* ── HEADER ── */}
       <header className="glass border-b border-[#DBEAFE] sticky top-0 z-50">
@@ -1919,6 +2199,7 @@ export default function StudentDashboard() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </PhoneSimulatorWrapper>
   );
 }
