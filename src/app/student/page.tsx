@@ -104,11 +104,8 @@ interface EtaState {
   source:  "blended" | "routing" | "stopped";
 }
 
-interface PhoneSimulatorWrapperProps {
+interface NotificationWrapperProps {
   children: React.ReactNode;
-  isSimulatorMode: boolean;
-  setIsSimulatorMode: (val: boolean) => void;
-  statusTime: string;
   activeNotification: {
     title: string;
     message: string;
@@ -118,129 +115,14 @@ interface PhoneSimulatorWrapperProps {
   setActiveNotification: (val: any) => void;
 }
 
-function PhoneSimulatorWrapper({
+function NotificationWrapper({
   children,
-  isSimulatorMode,
-  setIsSimulatorMode,
-  statusTime,
   activeNotification,
   setActiveNotification,
-}: PhoneSimulatorWrapperProps) {
-  if (isSimulatorMode) {
-    return (
-      <div className="min-h-screen bg-[#0F172A] flex flex-col md:flex-row items-center justify-center p-0 md:p-8 gap-8 transition-all duration-500 overflow-x-hidden relative">
-        {/* Side Controls Panel (Only on desktop) */}
-        <div className="hidden md:flex w-[320px] bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-3xl p-6 text-white flex-col justify-between shrink-0 shadow-2xl self-stretch">
-          <div className="space-y-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#F27A35] to-[#2563EB] p-0.5 shadow-md flex items-center justify-center">
-                <img src="/aditya-logo.png" alt="Aditya" className="w-full h-full object-contain p-0.5 bg-white rounded-[14px]" />
-              </div>
-              <div>
-                <h2 className="font-black text-lg tracking-tight leading-none text-white">ADITYA APP</h2>
-                <span className="text-[9px] text-slate-400 font-extrabold uppercase tracking-widest mt-1 inline-block">Device Simulator</span>
-              </div>
-            </div>
-
-            <div className="border-t border-slate-800/80 my-4 pt-4 space-y-4">
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Experience the Aditya University bus tracking interface as a native mobile application.
-              </p>
-              <div className="bg-slate-950/60 rounded-2xl p-4 border border-slate-800 space-y-3">
-                <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">✨ Simulator Specs</h3>
-                <ul className="text-xs text-slate-400 space-y-2 list-none pl-0">
-                  <li className="flex items-center gap-2">📱 <span className="text-slate-300 font-medium">Responsive Layout</span></li>
-                  <li className="flex items-center gap-2">⏰ <span className="text-slate-300 font-medium">Live Status Clock</span></li>
-                  <li className="flex items-center gap-2">🔔 <span className="text-slate-300 font-medium">App-style Push Alerts</span></li>
-                  <li className="flex items-center gap-2">🎵 <span className="text-slate-300 font-medium">Native Audio Chime</span></li>
-                </ul>
-              </div>
-              <div className="bg-blue-500/10 rounded-2xl p-4 border border-blue-500/20 text-xs text-blue-300 leading-relaxed">
-                <strong>📍 Proximity Alert:</strong> Tests bus proximity. A slide-down banner notification is automatically triggered when the active bus enters a 5 km radius of your boarding stop in the morning.
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setIsSimulatorMode(false)}
-            className="w-full bg-gradient-to-r from-[#2563EB] to-[#3B82F6] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white text-xs font-bold py-3 rounded-xl transition-all shadow-md shadow-blue-500/20 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
-          >
-            🖥️ Switch to Full Desktop View
-          </button>
-        </div>
-
-        {/* Smartphone mockup device wrapper */}
-        <div className="relative w-full h-screen md:w-[395px] md:h-[844px] bg-slate-950 md:rounded-[55px] md:border-[12px] md:border-slate-800 md:shadow-2xl overflow-hidden flex flex-col shrink-0">
-          {/* Dynamic Island / Bezel notch (Desktop only) */}
-          <div className="hidden md:flex absolute top-3 left-1/2 -translate-x-1/2 w-28 h-5.5 bg-black rounded-full z-50 items-center justify-center border border-slate-900">
-            <div className="w-2.5 h-2.5 bg-slate-900 rounded-full mr-2.5 animate-pulse" />
-            <div className="w-1.5 h-1.5 bg-slate-900 rounded-full" />
-          </div>
-
-          {/* Top Status Bar */}
-          <div className="h-11 bg-slate-950 text-white px-6 pt-3.5 flex items-center justify-between text-[11px] font-bold select-none z-40 shrink-0">
-            <div>{statusTime}</div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[9px] tracking-tighter opacity-80">5G</span>
-              <span className="text-[10px]">📶</span>
-              <span className="flex items-center gap-0.5 text-[9px]">89% 🔋</span>
-            </div>
-          </div>
-
-          {/* Phone Screen Viewer */}
-          <div className="flex-1 bg-[#F1F5F9] overflow-hidden relative flex flex-col rounded-b-[40px] md:rounded-b-[0px]">
-            {/* Slide Down App Push Notification Overlay */}
-            {activeNotification && (
-              <div className="absolute top-2 left-3 right-3 z-50 transition-all duration-300 animate-slide-up pointer-events-auto">
-                <div className="bg-white/95 backdrop-blur-md border border-[#DBEAFE] rounded-2xl p-3.5 shadow-2xl flex gap-3 items-start relative border-l-4 border-l-[#2563EB] hover:scale-[1.01] transition-transform">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#F27A35] to-[#2563EB] p-0.5 shadow-sm shrink-0 flex items-center justify-center">
-                    <img src="/aditya-logo.png" alt="Aditya" className="w-full h-full object-contain p-0.5 bg-white rounded-[9px]" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[9px] text-[#2563EB] font-extrabold uppercase tracking-wide">BusTrack Live</span>
-                      <span className="text-[9px] text-gray-400 font-semibold">now</span>
-                    </div>
-                    <p className="text-xs font-black text-slate-800 mt-0.5">{activeNotification.title}</p>
-                    <p className="text-[10px] text-gray-500 leading-relaxed mt-0.5">{activeNotification.message}</p>
-                  </div>
-                  <button 
-                    onClick={() => setActiveNotification(null)}
-                    className="w-5 h-5 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-xs text-gray-400 hover:text-gray-600 transition-colors shrink-0 cursor-pointer"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Inner Dashboard Content */}
-            <div className="flex-1 overflow-y-auto scrollbar-none flex flex-col relative h-full">
-              {children}
-            </div>
-
-            {/* Home swipe indicator bar (Desktop only) */}
-            <div className="hidden md:block absolute bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-400 rounded-full z-50 opacity-40 pointer-events-none" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Fullscreen view
+}: NotificationWrapperProps) {
   return (
     <div className="min-h-screen bg-[#F1F5F9] relative">
-      {/* Floating simulator activator (Desktop only) */}
-      <div className="hidden md:block fixed bottom-6 right-6 z-50">
-        <button
-          onClick={() => setIsSimulatorMode(true)}
-          className="bg-slate-900 border border-slate-800 text-white font-bold px-5 py-3 rounded-2xl hover:bg-slate-800 active:scale-95 transition-all shadow-xl flex items-center gap-2 cursor-pointer hover:scale-[1.02]"
-        >
-          📱 Switch to Mobile Simulator
-        </button>
-      </div>
-
-      {/* Push Notification Banner Overlay for fullscreen view */}
+      {/* Push Notification Banner Overlay */}
       {activeNotification && (
         <div className="fixed top-4 right-4 w-full max-w-sm z-50 transition-all duration-300 animate-slide-up pointer-events-auto">
           <div className="bg-white border-2 border-blue-100 rounded-2xl p-4 shadow-2xl flex gap-3 items-start relative border-l-4 border-l-[#2563EB]">
@@ -304,9 +186,7 @@ export default function StudentDashboard() {
   const [showAlerts, setShowAlerts] = useState(false);
   const [seenAlertKeys, setSeenAlertKeys] = useState<Set<string>>(new Set());
 
-  /* ─ simulator UI & native notifications ─ */
-  const [isSimulatorMode, setIsSimulatorMode] = useState(true);
-  const [statusTime, setStatusTime] = useState("");
+  /* ─ native notifications ─ */
   const [activeNotification, setActiveNotification] = useState<{
     title: string;
     message: string;
@@ -358,21 +238,6 @@ export default function StudentDashboard() {
     }, 6000);
   }, [playChime]);
 
-  // Update clock for status bar
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      let hours = now.getHours();
-      const minutes = String(now.getMinutes()).padStart(2, "0");
-      const ampm = hours >= 12 ? "PM" : "AM";
-      hours = hours % 12;
-      hours = hours ? hours : 12; // the hour '0' should be '12'
-      setStatusTime(`${hours}:${minutes} ${ampm}`);
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Cleanup notification timer
   useEffect(() => {
@@ -1017,10 +882,7 @@ export default function StudentDashboard() {
     const availableStops = selectedBus?.route?.stops ?? [];
 
     return (
-      <PhoneSimulatorWrapper
-        isSimulatorMode={isSimulatorMode}
-        setIsSimulatorMode={setIsSimulatorMode}
-        statusTime={statusTime}
+      <NotificationWrapper
         activeNotification={activeNotification}
         setActiveNotification={setActiveNotification}
       >
@@ -1216,7 +1078,7 @@ export default function StudentDashboard() {
             </div>
           </div>
         </div>
-      </PhoneSimulatorWrapper>
+      </NotificationWrapper>
     );
   }
 
@@ -1247,10 +1109,7 @@ export default function StudentDashboard() {
      RENDER
   ════════════════════════════════════════ */
   return (
-    <PhoneSimulatorWrapper
-      isSimulatorMode={isSimulatorMode}
-      setIsSimulatorMode={setIsSimulatorMode}
-      statusTime={statusTime}
+    <NotificationWrapper
       activeNotification={activeNotification}
       setActiveNotification={setActiveNotification}
     >
@@ -2200,6 +2059,6 @@ export default function StudentDashboard() {
         </div>
       )}
       </div>
-    </PhoneSimulatorWrapper>
+    </NotificationWrapper>
   );
 }
