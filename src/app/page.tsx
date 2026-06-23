@@ -515,8 +515,8 @@ export default function Home() {
                     <h3 className="font-extrabold text-slate-800 text-base">S Kumar Sai Prakash</h3>
                     <p className="text-xs font-bold text-blue-600 tracking-wider mt-1.5 uppercase bg-blue-50 px-2 py-0.5 rounded">24B11DS189</p>
                     <div className="flex gap-2 mt-5 w-full">
-                      <a href="#" className="flex-1 text-center py-1.5 px-3 rounded-lg bg-gray-50 border border-gray-150 hover:bg-gray-100 text-[11px] font-bold text-gray-600 transition-all">GitHub</a>
-                      <a href="#" className="flex-1 text-center py-1.5 px-3 rounded-lg bg-blue-50 border border-blue-150 hover:bg-blue-100 text-[11px] font-bold text-blue-600 transition-all">LinkedIn</a>
+                      <a href="https://github.com/Prakashsaripalli/" target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-1.5 px-3 rounded-lg bg-gray-50 border border-gray-150 hover:bg-gray-100 text-[11px] font-bold text-gray-600 transition-all">GitHub</a>
+                      <a href="https://www.linkedin.com/in/kumar-sai-prakash-saripalli/" target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-1.5 px-3 rounded-lg bg-blue-50 border border-blue-150 hover:bg-blue-100 text-[11px] font-bold text-blue-600 transition-all">LinkedIn</a>
                     </div>
                   </div>
 
@@ -528,8 +528,8 @@ export default function Home() {
                     <h3 className="font-extrabold text-slate-800 text-base">O Jyothika Reddy</h3>
                     <p className="text-xs font-bold text-purple-600 tracking-wider mt-1.5 uppercase bg-purple-50 px-2 py-0.5 rounded">24B11DS153</p>
                     <div className="flex gap-2 mt-5 w-full">
-                      <a href="#" className="flex-1 text-center py-1.5 px-3 rounded-lg bg-gray-50 border border-gray-150 hover:bg-gray-100 text-[11px] font-bold text-gray-600 transition-all">GitHub</a>
-                      <a href="#" className="flex-1 text-center py-1.5 px-3 rounded-lg bg-purple-50 border border-purple-150 hover:bg-purple-100 text-[11px] font-bold text-purple-600 transition-all">LinkedIn</a>
+                      <a href="https://github.com/Jyothika30-2006" target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-1.5 px-3 rounded-lg bg-gray-50 border border-gray-150 hover:bg-gray-100 text-[11px] font-bold text-gray-600 transition-all">GitHub</a>
+                      <a href="https://www.linkedin.com/in/jyothika-oleti/" target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-1.5 px-3 rounded-lg bg-purple-50 border border-purple-150 hover:bg-purple-100 text-[11px] font-bold text-purple-600 transition-all">LinkedIn</a>
                     </div>
                   </div>
 
@@ -541,8 +541,8 @@ export default function Home() {
                     <h3 className="font-extrabold text-slate-800 text-base">M Madhumitha</h3>
                     <p className="text-xs font-bold text-pink-600 tracking-wider mt-1.5 uppercase bg-pink-50 px-2 py-0.5 rounded">25B21DS024</p>
                     <div className="flex gap-2 mt-5 w-full">
-                      <a href="#" className="flex-1 text-center py-1.5 px-3 rounded-lg bg-gray-50 border border-gray-150 hover:bg-gray-100 text-[11px] font-bold text-gray-600 transition-all">GitHub</a>
-                      <a href="#" className="flex-1 text-center py-1.5 px-3 rounded-lg bg-pink-50 border border-pink-150 hover:bg-pink-100 text-[11px] font-bold text-pink-600 transition-all">LinkedIn</a>
+                      <a href="https://github.com/madhumithamavuri" target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-1.5 px-3 rounded-lg bg-gray-50 border border-gray-150 hover:bg-gray-100 text-[11px] font-bold text-gray-600 transition-all">GitHub</a>
+                      <a href="https://www.linkedin.com/in/madhumitha-mavuri-1031a1315/" target="_blank" rel="noopener noreferrer" className="flex-1 text-center py-1.5 px-3 rounded-lg bg-pink-50 border border-pink-150 hover:bg-pink-100 text-[11px] font-bold text-pink-600 transition-all">LinkedIn</a>
                     </div>
                   </div>
                 </div>
