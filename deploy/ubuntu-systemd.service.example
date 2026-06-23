@@ -1,0 +1,24 @@
+[Unit]
+Description=BusTrackLive (Next.js + Socket.IO)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/bustracklive
+EnvironmentFile=/var/www/bustracklive/.env.production
+
+# If you use production build artifacts, run:
+# npm ci
+# npm run build
+# then start with:
+ExecStart=/usr/bin/npm run start
+Restart=always
+RestartSec=5
+
+# Avoid too-low limits for socket connections
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+

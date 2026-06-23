@@ -1,0 +1,31 @@
+# Nginx reverse proxy for BusTrackLive (Next.js + Socket.IO on port 3000)
+#
+# Copy as a site config and set server_name to your domain.
+# This proxy supports WebSocket upgrades needed by Socket.IO.
+#
+# Path suggestion (Ubuntu):
+#   /etc/nginx/sites-available/bustracklive
+# Then symlink to sites-enabled.
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name adityauniversitybustracking.com www.adityauniversitybustracking.com;
+
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # WebSocket / Socket.IO
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+

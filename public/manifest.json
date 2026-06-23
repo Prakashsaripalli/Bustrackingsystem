@@ -1,0 +1,71 @@
+{
+  "name": "Aditya University Bus Tracking",
+  "short_name": "BusTrackLive",
+  "description": "Aditya University bus tracking for students, drivers, and administrators.",
+  "id": "/?source=pwa",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#eff6ff",
+  "theme_color": "#2563eb",
+  "categories": ["navigation", "education", "travel"],
+  "icons": [
+    {
+      "src": "/icons/bus-track-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/bus-track-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/bus-track-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/bus-track-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/bus-track.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/bus-track-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Student Tracking",
+      "short_name": "Student",
+      "url": "/student",
+      "icons": [{ "src": "/icons/bus-track-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Driver Portal",
+      "short_name": "Driver",
+      "url": "/driver",
+      "icons": [{ "src": "/icons/bus-track-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Admin Dashboard",
+      "short_name": "Admin",
+      "url": "/admin",
+      "icons": [{ "src": "/icons/bus-track-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}

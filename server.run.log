@@ -1,0 +1,7 @@
+
+> dev
+> node server.js
+
+[dotenv@17.3.1] injecting env (0) from .env.production -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[dotenv@17.3.1] injecting env (11) from .env.local -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
