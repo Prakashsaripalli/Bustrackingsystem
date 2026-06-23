@@ -242,9 +242,13 @@ body {
   border-color: #DBEAFE;
 }
 .team-card-blue:hover {
-  transform: scale(1.08) translateY(-4px);
   box-shadow: 0 20px 30px rgba(37, 99, 235, 0.12);
   animation: border-blink-blue 1.2s infinite ease-in-out;
+}
+@media (min-width: 768px) {
+  .team-card-blue:hover {
+    transform: scale(1.08) translateY(-4px);
+  }
 }
 
 /* Purple Card */
@@ -257,9 +261,13 @@ body {
   border-color: #F3E8FF;
 }
 .team-card-purple:hover {
-  transform: scale(1.08) translateY(-4px);
   box-shadow: 0 20px 30px rgba(147, 51, 234, 0.12);
   animation: border-blink-purple 1.2s infinite ease-in-out;
+}
+@media (min-width: 768px) {
+  .team-card-purple:hover {
+    transform: scale(1.08) translateY(-4px);
+  }
 }
 
 /* Pink Card */
@@ -272,9 +280,13 @@ body {
   border-color: #FCE7F3;
 }
 .team-card-pink:hover {
-  transform: scale(1.08) translateY(-4px);
   box-shadow: 0 20px 30px rgba(236, 72, 153, 0.12);
   animation: border-blink-pink 1.2s infinite ease-in-out;
+}
+@media (min-width: 768px) {
+  .team-card-pink:hover {
+    transform: scale(1.08) translateY(-4px);
+  }
 }
 
 /* Redesign Premium Utilities */
