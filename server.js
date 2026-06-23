@@ -377,7 +377,7 @@ app.prepare().then(() => {
         }
       }
     }
-    console.log(`\n🚍 BusTrackLive running on ${protocol}://localhost:${PORT}`);
+    console.log(`\n🚍 Aditya Bus Connect running on ${protocol}://localhost:${PORT}`);
     console.log(`🌐 Local Wi-Fi access: ${protocol}://${localIp}:${PORT}`);
     console.log(`🔒 Host binding: ${HOST}`);
     console.log(`🔐 HTTPS: ${USE_HTTPS ? "enabled" : "disabled"}`);

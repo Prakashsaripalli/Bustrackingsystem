@@ -1,7 +1,7 @@
 {
-  "name": "Aditya University Bus Tracking",
-  "short_name": "BusTrackLive",
-  "description": "Aditya University bus tracking for students, drivers, and administrators.",
+  "name": "Aditya Bus Connect",
+  "short_name": "Aditya Bus Connect",
+  "description": "Aditya Bus Connect for students, drivers, and administrators.",
   "id": "/?source=pwa",
   "start_url": "/",
   "scope": "/",

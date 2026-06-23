@@ -4,17 +4,19 @@ import { AuthProvider } from "@/context/AuthContext";
 import PWAController from "@/components/PWAController";
 
 export const metadata: Metadata = {
-  title: "Aditya University Bus Tracking",
-  description: "Aditya University bus tracking system with live GPS, traffic-aware ETA, and smart route search",
+  title: "Aditya Bus Connect",
+  description: "Aditya Bus Connect - Live college bus tracking system with live GPS, traffic-aware ETA, and smart route search",
   manifest: "/manifest.json",
-  applicationName: "BusTrackLive",
+  applicationName: "Aditya Bus Connect",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "BusTrackLive",
+    title: "Aditya Bus Connect",
   },
   icons: {
     icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.png", type: "image/png", sizes: "32x32" },
       { url: "/icons/bus-track-192.png", sizes: "192x192", type: "image/png" },
       { url: "/icons/bus-track-512.png", sizes: "512x512", type: "image/png" },
     ],

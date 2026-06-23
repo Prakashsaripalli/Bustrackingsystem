@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       challenge,
-      rp: { name: "BusTrackLive", id: rpId },
+      rp: { name: "Aditya Bus Connect", id: rpId },
       user: {
         id: base64url(Buffer.from(String(driver.id))),
         name: driver.driverId || driver.email,

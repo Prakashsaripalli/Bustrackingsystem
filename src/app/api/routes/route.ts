@@ -7,7 +7,7 @@ import { eq, sql } from "drizzle-orm";
 async function geocode(name: string): Promise<{ lat: number; lng: number } | null> {
   try {
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(name + ", Andhra Pradesh, India")}&format=json&limit=1`;
-    const res = await fetch(url, { headers: { "User-Agent": "BusTrackLive/1.0" }, signal: AbortSignal.timeout(6000) });
+    const res = await fetch(url, { headers: { "User-Agent": "AdityaBusConnect/1.0" }, signal: AbortSignal.timeout(6000) });
     const d   = await res.json();
     if (d.length > 0) return { lat: parseFloat(d[0].lat), lng: parseFloat(d[0].lon) };
   } catch { /**/ }

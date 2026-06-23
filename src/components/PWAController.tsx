@@ -41,7 +41,7 @@ export default function PWAController() {
     <>
       {updateReady && (
         <div className="fixed bottom-4 left-4 z-[9000] max-w-sm rounded-2xl bg-white border border-blue-200 shadow-xl p-4">
-          <p className="text-sm font-bold text-[#1E293B]">A new BusTrackLive version is ready.</p>
+          <p className="text-sm font-bold text-[#1E293B]">A new Aditya Bus Connect version is ready.</p>
           <button onClick={update} className="mt-2 text-xs font-bold text-[#2563EB] hover:underline">Update now</button>
         </div>
       )}
