@@ -159,6 +159,7 @@ export default function AdminDashboard() {
   const [saving,           setSaving]           = useState(false);
   const [adminBuilderRouteId, setAdminBuilderRouteId] = useState<number | null>(null);
   const [showAdminBuilder,    setShowAdminBuilder]    = useState(false);
+  const [adminLoc,            setAdminLoc]            = useState<{ lat: number; lng: number } | null>(null);
 
   const getBusInfo = useCallback((busId: string) => buses.find(bus => bus.busId === busId), [buses]);
   const selectedFormBus = buses.find(bus => bus.busId === studentForm.assignedBusId);
@@ -323,6 +324,24 @@ export default function AdminDashboard() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !navigator.geolocation || !isAuthenticated || user?.role !== "admin" || tab !== "map") return;
+
+    const watchId = navigator.geolocation.watchPosition(
+      pos => {
+        setAdminLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      err => {
+        console.warn("Admin geolocation watch error:", err);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 4000 }
+    );
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+    };
+  }, [isAuthenticated, user?.role, tab]);
 
   const loadAlerts = useCallback(async () => {
     if (!token) return;
@@ -1055,7 +1074,7 @@ export default function AdminDashboard() {
                 <h3 className="font-bold text-[#1E293B]">Live Bus Locations</h3>
                 <span className="text-xs text-gray-500">{visibleMapBuses.length} buses on map</span>
               </div>
-              <AdminMap activeBuses={visibleMapBuses} selectedBusId={mapSelectedBus} onBusSelect={setMapSelectedBus} buses={buses} routes={routes} />
+              <AdminMap activeBuses={visibleMapBuses} selectedBusId={mapSelectedBus} onBusSelect={setMapSelectedBus} buses={buses} routes={routes} userLocation={adminLoc} students={students} />
             </div>
             {visibleMapBuses.length > 0 && (
               <div className="grid sm:grid-cols-3 gap-4">

@@ -32,6 +32,7 @@ interface DriverMapProps {
   hideHud?:        boolean;
   onEtaUpdate?:    (data: { destEtaMin: number | null; destDistKm: number | null; totalDistKm: number | null; totalDurMin: number | null }) => void;
   busId?:          string | null;
+  assignedStudents?: any[];
 }
 
 interface OSRMRoute {
@@ -394,7 +395,7 @@ function speedColor(kmh: number): string {
   return "#EF4444";                  // red: stopped
 }
 
-export default function DriverMap({ location, positionHistory, speed, route, elapsed, hideHud = false, onEtaUpdate, busId }: DriverMapProps) {
+export default function DriverMap({ location, positionHistory, speed, route, elapsed, hideHud = false, onEtaUpdate, busId, assignedStudents = [] }: DriverMapProps) {
   const containerRef    = useRef<HTMLDivElement>(null);
   const mapRef          = useRef<L.Map | null>(null);
   const routeLayerRef   = useRef<L.LayerGroup | null>(null);
@@ -750,12 +751,25 @@ export default function DriverMap({ location, positionHistory, speed, route, ela
         }).addTo(lg2);
       }
 
+      const getStudentCountForStop = (stopName: string) => {
+        if (!assignedStudents) return 0;
+        return assignedStudents.filter((st: any) => {
+          return st.boardingStop?.toLowerCase().trim() === stopName.toLowerCase().trim();
+        }).length;
+      };
+
       // Intermediate stop teardrops
       stops.slice(1,-1).forEach((s:Stop) => {
         // Skip intermediate dots if they overlap with the destination
         if (isTrackerNearRoute && Math.abs(s.lat - destinationCoords[0]) < 0.0001 && Math.abs(s.lng - destinationCoords[1]) < 0.0001) {
           return;
         }
+        const count = getStudentCountForStop(s.name);
+        const countSuffix = count > 0 ? ` (👥 ${count})` : "";
+        const popupDetails = count > 0 
+          ? `<br><span style="color:#2563EB;font-size:11px;font-weight:700">👥 ${count} student${count !== 1 ? 's' : ''} boarding</span>`
+          : "";
+
         L.marker([s.lat,s.lng] as L.LatLngTuple, {
           icon: L.divIcon({
             html:`
@@ -764,20 +778,25 @@ export default function DriverMap({ location, positionHistory, speed, route, ela
                   <path d="M12 0C5.37 0 0 5.37 0 12C0 21 12 30 12 30C12 30 24 21 24 12C24 5.37 18.63 0 12 0Z" fill="#3B82F6" stroke="white" stroke-width="1.8"/>
                   <circle cx="12" cy="12" r="5" fill="white"/>
                 </svg>
-                <div style="position:absolute; top:36px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.96); color:#475569; padding:2.5px 8px; border-radius:12px; font-size:10px; font-weight:800; white-space:nowrap; box-shadow:0 1px 5px rgba(37,99,235,0.08); font-family:Inter,sans-serif; border:1px solid rgba(37,99,235,0.08)">${s.name}</div>
+                <div style="position:absolute; top:36px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.96); color:#475569; padding:2.5px 8px; border-radius:12px; font-size:10px; font-weight:800; white-space:nowrap; box-shadow:0 1px 5px rgba(37,99,235,0.08); font-family:Inter,sans-serif; border:1px solid rgba(37,99,235,0.08)">${s.name}${countSuffix}</div>
               </div>`,
             className:"", iconSize:[24,32], iconAnchor:[12,30],
           }),
           zIndexOffset:200,
-        }).addTo(lg2).bindPopup(`<div style="font-family:Inter,sans-serif"><b>${s.name}</b></div>`);
+        }).addTo(lg2).bindPopup(`<div style="font-family:Inter,sans-serif"><b>${s.name}</b>${popupDetails}</div>`);
       });
 
+      const startCount = getStudentCountForStop(stops[0].name);
+      const startCountSuffix = startCount > 0 ? ` (👥 ${startCount})` : "";
+      const endCount = getStudentCountForStop(stops[stops.length - 1].name);
+      const endCountSuffix = endCount > 0 ? ` (👥 ${endCount})` : "";
+
       if (isTrackerNearRoute) {
-        L.marker([stops[0].lat,stops[0].lng] as L.LatLngTuple, { icon:makePin("start",stops[0].name), zIndexOffset:1000 }).addTo(lg2);
-        L.marker(destinationCoords, { icon:makePin("end",endPointName), zIndexOffset:1000 }).addTo(lg2);
+        L.marker([stops[0].lat,stops[0].lng] as L.LatLngTuple, { icon:makePin("start",stops[0].name + startCountSuffix), zIndexOffset:1000 }).addTo(lg2);
+        L.marker(destinationCoords, { icon:makePin("end",endPointName + endCountSuffix), zIndexOffset:1000 }).addTo(lg2);
       } else {
-        L.marker([stops[0].lat,stops[0].lng] as L.LatLngTuple, { icon:makePin("start",stops[0].name), zIndexOffset:1000 }).addTo(lg2);
-        L.marker([stops[stops.length-1].lat,stops[stops.length-1].lng] as L.LatLngTuple, { icon:makePin("end",stops[stops.length-1].name), zIndexOffset:1000 }).addTo(lg2);
+        L.marker([stops[0].lat,stops[0].lng] as L.LatLngTuple, { icon:makePin("start",stops[0].name + startCountSuffix), zIndexOffset:1000 }).addTo(lg2);
+        L.marker([stops[stops.length-1].lat,stops[stops.length-1].lng] as L.LatLngTuple, { icon:makePin("end",stops[stops.length-1].name + endCountSuffix), zIndexOffset:1000 }).addTo(lg2);
         mapRef.current?.fitBounds(L.latLngBounds(primPath).pad(0.13), { animate:true, duration:0.8 });
       }
     })();

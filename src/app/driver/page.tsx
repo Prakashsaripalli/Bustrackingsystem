@@ -867,6 +867,7 @@ export default function DriverDashboard() {
     loadData();
     loadProfile();
     loadDriverAlerts();
+    loadAssignedStudents();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, user?.id]);
 
@@ -1347,6 +1348,8 @@ export default function DriverDashboard() {
         assignedBusId: updated.assignedBusId,
         preferredRouteId: updated.preferredRouteId,
       });
+      // Load assigned students again since the assigned bus might have changed
+      loadAssignedStudents();
       // Apply preferred route immediately to trip setup
       if (updated.preferredRouteId) {
         const route = routes.find(r => r.id === updated.preferredRouteId);
@@ -2710,6 +2713,7 @@ export default function DriverDashboard() {
                    speed={speed}
                    elapsed={elapsed}
                    busId={busNumber}
+                   assignedStudents={assignedStudents}
                    route={selectedRoute ? {
                      ...selectedRoute,
                      stopCoordinates: getDirectionalStops(selectedRoute as RouteWithDirection, tripDirection),

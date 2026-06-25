@@ -34,6 +34,8 @@ interface AdminMapProps {
   onBusSelect?: (busId: string) => void;
   buses?: any[];
   routes?: any[];
+  userLocation?: { lat: number; lng: number } | null;
+  students?: any[];
 }
 
 function parseStopCoords(raw: any): Stop[] {
@@ -372,7 +374,7 @@ function makePopup(bus: ActiveBus): string {
     </div>`;
 }
 
-export default function AdminMap({ activeBuses, selectedBusId, onBusSelect, buses, routes }: AdminMapProps) {
+export default function AdminMap({ activeBuses, selectedBusId, onBusSelect, buses, routes, userLocation, students = [] }: AdminMapProps) {
   const divRef     = useRef<HTMLDivElement>(null);
   const mapRef     = useRef<L.Map | null>(null);
   const routeLayerRef = useRef<L.LayerGroup | null>(null);
@@ -706,11 +708,26 @@ export default function AdminMap({ activeBuses, selectedBusId, onBusSelect, buse
         }).addTo(lg2);
       }
 
+      // Helper to calculate student counts per stop
+      const getStudentCountForStop = (stopName: string) => {
+        if (!students || !selectedBusId) return 0;
+        return students.filter((st: any) => {
+          return st.assignedBusId === selectedBusId &&
+            st.boardingStop?.toLowerCase().trim() === stopName.toLowerCase().trim();
+        }).length;
+      };
+
       /* Intermediate stop teardrops */
       routeStops.slice(1, -1).forEach(s => {
         if (shouldDrawDynamic && Math.abs(s.lat - destinationCoords[0]) < 0.0001 && Math.abs(s.lng - destinationCoords[1]) < 0.0001) {
           return;
         }
+        const count = getStudentCountForStop(s.name);
+        const countSuffix = count > 0 ? ` (👥 ${count})` : "";
+        const popupDetails = count > 0 
+          ? `<br><span style="color:#2563EB;font-size:11px;font-weight:700">👥 ${count} student${count !== 1 ? 's' : ''} boarding</span>`
+          : "";
+
         L.marker([s.lat, s.lng] as L.LatLngTuple, {
           icon: L.divIcon({
             html: `
@@ -719,26 +736,38 @@ export default function AdminMap({ activeBuses, selectedBusId, onBusSelect, buse
                   <path d="M12 0C5.37 0 0 5.37 0 12C0 21 12 30 12 30C12 30 24 21 24 12C24 5.37 18.63 0 12 0Z" fill="#3B82F6" stroke="white" stroke-width="1.8"/>
                   <circle cx="12" cy="12" r="5" fill="white"/>
                 </svg>
-                <div style="position:absolute; top:36px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.96); color:#475569; padding:2.5px 8px; border-radius:12px; font-size:10px; font-weight:800; white-space:nowrap; box-shadow:0 1px 5px rgba(37,99,235,0.08); font-family:Inter,sans-serif; border:1px solid rgba(37,99,235,0.08)">${s.name}</div>
+                <div style="position:absolute; top:36px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.96); color:#475569; padding:2.5px 8px; border-radius:12px; font-size:10px; font-weight:800; white-space:nowrap; box-shadow:0 1px 5px rgba(37,99,235,0.08); font-family:Inter,sans-serif; border:1px solid rgba(37,99,235,0.08)">${s.name}${countSuffix}</div>
               </div>`,
             className: "", iconSize: [24, 32], iconAnchor: [12, 30]
           }),
           zIndexOffset: 200
-        }).addTo(lg2).bindPopup(`<div style="font-family:Inter,sans-serif"><b>${s.name}</b><br><span style="color:#0F172A;font-size:11px;font-weight:600">Bus Stop</span></div>`);
+        }).addTo(lg2).bindPopup(`<div style="font-family:Inter,sans-serif"><b>${s.name}</b><br><span style="color:#0F172A;font-size:11px;font-weight:600">Bus Stop</span>${popupDetails}</div>`);
       });
 
       /* Start A + End B pins */
+      const startCount = getStudentCountForStop(routeStops[0].name);
+      const startCountSuffix = startCount > 0 ? ` (👥 ${startCount})` : "";
+      const startPopupDetails = startCount > 0 
+        ? `<br><span style="color:#2563EB;font-size:11px;font-weight:700">👥 ${startCount} student${startCount !== 1 ? 's' : ''} boarding</span>`
+        : "";
+
+      const endCount = getStudentCountForStop(routeStops[routeStops.length - 1].name);
+      const endCountSuffix = endCount > 0 ? ` (👥 ${endCount})` : "";
+      const endPopupDetails = endCount > 0 
+        ? `<br><span style="color:#2563EB;font-size:11px;font-weight:700">👥 ${endCount} student${endCount !== 1 ? 's' : ''} boarding</span>`
+        : "";
+
       if (shouldDrawDynamic) {
-        L.marker([routeStops[0].lat, routeStops[0].lng] as L.LatLngTuple, { icon: makePin("start", routeStops[0].name), zIndexOffset: 1000 }).addTo(lg2)
-          .bindPopup(`<div style="font-family:Inter,sans-serif"><b>${routeStops[0].name}</b><br><span style="color:#16A34A;font-size:11px;font-weight:600">📍 Starting Point</span></div>`);
-        L.marker(destinationCoords, { icon: makePin("end", endPointName), zIndexOffset: 1000 }).addTo(lg2)
-          .bindPopup(`<div style="font-family:Inter,sans-serif"><b>${endPointName}</b><br><span style="color:#DC2626;font-size:11px;font-weight:600">🏁 Destination</span></div>`);
+        L.marker([routeStops[0].lat, routeStops[0].lng] as L.LatLngTuple, { icon: makePin("start", routeStops[0].name + startCountSuffix), zIndexOffset: 1000 }).addTo(lg2)
+          .bindPopup(`<div style="font-family:Inter,sans-serif"><b>${routeStops[0].name}</b><br><span style="color:#16A34A;font-size:11px;font-weight:600">📍 Starting Point</span>${startPopupDetails}</div>`);
+        L.marker(destinationCoords, { icon: makePin("end", endPointName + endCountSuffix), zIndexOffset: 1000 }).addTo(lg2)
+          .bindPopup(`<div style="font-family:Inter,sans-serif"><b>${endPointName}</b><br><span style="color:#DC2626;font-size:11px;font-weight:600">🏁 Destination</span>${endPopupDetails}</div>`);
       } else {
-        L.marker([routeStops[0].lat, routeStops[0].lng] as L.LatLngTuple, { icon: makePin("start", routeStops[0].name), zIndexOffset: 1000 }).addTo(lg2)
-          .bindPopup(`<div style="font-family:Inter,sans-serif"><b>${routeStops[0].name}</b><br><span style="color:#16A34A;font-size:11px;font-weight:600">📍 Starting Point</span></div>`);
+        L.marker([routeStops[0].lat, routeStops[0].lng] as L.LatLngTuple, { icon: makePin("start", routeStops[0].name + startCountSuffix), zIndexOffset: 1000 }).addTo(lg2)
+          .bindPopup(`<div style="font-family:Inter,sans-serif"><b>${routeStops[0].name}</b><br><span style="color:#16A34A;font-size:11px;font-weight:600">📍 Starting Point</span>${startPopupDetails}</div>`);
         const en = routeStops[routeStops.length - 1];
-        L.marker([en.lat, en.lng] as L.LatLngTuple, { icon: makePin("end", en.name), zIndexOffset: 1000 }).addTo(lg2)
-          .bindPopup(`<div style="font-family:Inter,sans-serif"><b>${en.name}</b><br><span style="color:#DC2626;font-size:11px;font-weight:600">🏁 Destination</span></div>`);
+        L.marker([en.lat, en.lng] as L.LatLngTuple, { icon: makePin("end", en.name + endCountSuffix), zIndexOffset: 1000 }).addTo(lg2)
+          .bindPopup(`<div style="font-family:Inter,sans-serif"><b>${en.name}</b><br><span style="color:#DC2626;font-size:11px;font-weight:600">🏁 Destination</span>${endPopupDetails}</div>`);
       }
 
       if (!shouldDrawDynamic) {
@@ -885,7 +914,57 @@ export default function AdminMap({ activeBuses, selectedBusId, onBusSelect, buse
       const bounds = L.latLngBounds(valid.map(b => [b.lat, b.lng] as L.LatLngTuple));
       map.fitBounds(bounds.pad(0.2));
     }
-  }, [activeBuses, selectedBusId, onBusSelect, buses, routes, fullRouteRoadPath]);
+  }, [activeBuses, selectedBusId, onBusSelect, buses, routes, fullRouteRoadPath, students]);
+
+  /* ════ 5. Draw admin/user live location ════ */
+  const userMarkerRef = useRef<L.Marker | null>(null);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (userLocation && userLocation.lat !== 0 && userLocation.lng !== 0) {
+      const icon = L.divIcon({
+        html: `
+          <div style="position:relative;display:flex;align-items:center;justify-content:center;">
+            <div style="position:absolute;inset:-8px;border-radius:50%;border:3px solid rgba(124,58,237,0.35);animation:__admpulse 1.5s ease-in-out infinite;"></div>
+            <div style="
+              width:32px;height:32px;
+              background:linear-gradient(145deg,#7C3AED,#C084FC);
+              border-radius:50%;
+              border:2.5px solid white;
+              box-shadow:0 4px 12px rgba(124,58,237,0.4);
+              display:flex;align-items:center;justify-content:center;
+            ">
+              <span style="font-size:12px">👤</span>
+            </div>
+            <div style="
+              position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);
+              background:#7C3AED;color:white;
+              padding:1px 6px;border-radius:10px;
+              font-size:9px;font-weight:800;white-space:nowrap;
+              font-family:Inter,system-ui,sans-serif;
+              box-shadow:0 1px 4px rgba(0,0,0,0.15);
+            ">Admin</div>
+          </div>`,
+        className: "",
+        iconSize: [32, 40],
+        iconAnchor: [16, 16],
+      });
+
+      if (userMarkerRef.current) {
+        userMarkerRef.current.setLatLng([userLocation.lat, userLocation.lng]);
+      } else {
+        userMarkerRef.current = L.marker([userLocation.lat, userLocation.lng], { icon })
+          .addTo(map)
+          .bindPopup('<div style="font-family:Inter,sans-serif;font-weight:700">📍 Your Location (Admin)</div>');
+      }
+    } else {
+      if (userMarkerRef.current) {
+        map.removeLayer(userMarkerRef.current);
+        userMarkerRef.current = null;
+      }
+    }
+  }, [userLocation]);
 
   return (
     <div style={{ position: "relative", height: "420px", zIndex: 1 }}>

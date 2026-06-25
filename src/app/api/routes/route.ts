@@ -239,6 +239,15 @@ export async function PATCH(req: NextRequest) {
       
       // Keep stops aligned with stopCoordinates names
       allowed.stops = stopCoords.map(sc => sc.name);
+
+      // Auto-recalculate distance + duration via OSRM when map editor updates stops coordinates
+      try {
+        const { distance, duration } = await calcRouteDistanceDuration(stopCoords);
+        allowed.distance = distance;
+        allowed.estimatedDuration = duration;
+      } catch (err) {
+        console.error("Failed to recalculate distance/duration in PATCH:", err);
+      }
     }
 
     const result = await db.update(routes).set(allowed).where(eq(routes.id, id)).returning();

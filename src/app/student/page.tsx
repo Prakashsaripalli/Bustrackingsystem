@@ -257,6 +257,8 @@ export default function StudentDashboard() {
   const [etaLoading,       setEtaLoading]        = useState(false);
   const etaComputingRef = useRef(false);
 
+  const [studentLoc, setStudentLoc] = useState<{ lat: number; lng: number } | null>(null);
+
   /* ─ all buses view ─ */
   const [search,        setSearch]        = useState("");
   const [selectedAllBus,setSelectedAllBus]= useState<string|null>(null);
@@ -302,6 +304,24 @@ export default function StudentDashboard() {
       setQrCodeUrl("");
     }
   }, [user?.studentId]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !navigator.geolocation || !isAuthenticated || user?.role !== "student") return;
+
+    const watchId = navigator.geolocation.watchPosition(
+      pos => {
+        setStudentLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      err => {
+        console.warn("Student geolocation watch error:", err);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 4000 }
+    );
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+    };
+  }, [isAuthenticated, user?.role]);
 
   const handlePhotoClick = () => {
     fileInputRef.current?.click();
@@ -1342,6 +1362,8 @@ export default function StudentDashboard() {
                   routeStops={myRouteStops}
                   allRoutes={routes}
                   autoFlyToStart={false}
+                  userLocation={studentLoc}
+                  userBoardingStop={user.boardingStop}
                 />
               </div>
 
@@ -1568,6 +1590,8 @@ export default function StudentDashboard() {
                         routeStops={allStops}
                         allRoutes={routes}
                         autoFlyToStart={allAutoFly}
+                        userLocation={studentLoc}
+                        userBoardingStop={user.boardingStop}
                       />
                     </div>
 

@@ -21,6 +21,8 @@ interface Props {
   onBusClick?:     (busId: string) => void;
   onRouteChange?:  (routeId: number) => void;
   autoFlyToStart?: boolean;
+  userLocation?:   { lat: number; lng: number } | null;
+  userBoardingStop?: string | null;
 }
 
 /* ── OSRM road path computed leg-by-leg in parallel ── */
@@ -147,9 +149,9 @@ function makeBusMarkerIcon(heading: number, selected: boolean, busId: string): L
   });
 }
 
-function makePin(type: "start"|"end", label: string): L.DivIcon {
-  const color  = type === "start" ? "#16A34A" : "#DC2626";
-  const letter = type === "start" ? "A" : "B";
+function makePin(type: "start"|"end"|"userStop", label: string): L.DivIcon {
+  const color  = type === "start" ? "#16A34A" : type === "end" ? "#DC2626" : "#EA580C";
+  const letter = type === "start" ? "A" : type === "end" ? "B" : "⭐";
   return L.divIcon({
     html: `
       <div style="position:relative;width:38px">
@@ -200,7 +202,7 @@ function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
 
 export default function TrackingMap({
   busLocations, selectedBusId, routeStops,
-  onBusClick, autoFlyToStart,
+  onBusClick, autoFlyToStart, userLocation, userBoardingStop,
 }: Props) {
   const divRef        = useRef<HTMLDivElement>(null);
   const mapRef        = useRef<L.Map | null>(null);
@@ -318,22 +320,32 @@ export default function TrackingMap({
 
       /* Intermediate stop dots */
       routeStops.slice(1,-1).forEach(s => {
+        const isUserStop = userBoardingStop && s.name.toLowerCase().trim() === userBoardingStop.toLowerCase().trim();
+        const stopColor = isUserStop ? "#EA580C" : "#2563EB";
+        const stopLabel = isUserStop ? `${s.name} (Your Stop)` : s.name;
+        const extraIconStyle = isUserStop 
+          ? `border: 3px solid #EA580C; box-shadow: 0 0 0 4px rgba(234,88,12,0.25), 0 2px 8px rgba(234,88,12,0.4);`
+          : `border: 3px solid #2563EB; box-shadow: 0 2px 8px rgba(37,99,235,0.4);`;
+        const extraBgStyle = isUserStop ? `background:#EA580C;` : `background:#1E293B;`;
+
         L.marker([s.lat,s.lng] as L.LatLngTuple, {
           icon: L.divIcon({
-            html:`<div style="position:relative"><div style="width:14px;height:14px;background:#fff;border:3px solid #2563EB;border-radius:50%;box-shadow:0 2px 8px rgba(37,99,235,0.4)"></div><div style="position:absolute;top:18px;left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-family:Inter,sans-serif">${s.name}</div></div>`,
+            html:`<div style="position:relative"><div style="width:14px;height:14px;background:#fff;${extraIconStyle}border-radius:50%"></div><div style="position:absolute;top:18px;left:50%;transform:translateX(-50%);${extraBgStyle}color:#fff;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-family:Inter,sans-serif">${stopLabel}</div></div>`,
             className:"", iconSize:[14,14], iconAnchor:[7,7],
           }),
-          zIndexOffset:200,
-        }).addTo(lg2).bindPopup(`<div style="font-family:Inter,sans-serif"><b>${s.name}</b><br><span style="color:#64748B;font-size:11px">Bus Stop</span></div>`);
+          zIndexOffset:isUserStop ? 300 : 200,
+        }).addTo(lg2).bindPopup(`<div style="font-family:Inter,sans-serif"><b>${s.name}</b><br><span style="color:${isUserStop ? "#EA580C" : "#64748B"};font-size:11px;font-weight:600">Bus Stop${isUserStop ? " (Your Boarding Stop)" : ""}</span></div>`);
       });
 
       /* Start A + End B pins */
-      L.marker([routeStops[0].lat,routeStops[0].lng] as L.LatLngTuple, { icon:makePin("start",routeStops[0].name), zIndexOffset:1000 }).addTo(lg2)
-        .bindPopup(`<div style="font-family:Inter,sans-serif"><b>${routeStops[0].name}</b><br><span style="color:#16A34A;font-size:11px;font-weight:600">📍 Starting Point</span></div>`);
+      const isStartUserStop = userBoardingStop && routeStops[0].name.toLowerCase().trim() === userBoardingStop.toLowerCase().trim();
+      L.marker([routeStops[0].lat,routeStops[0].lng] as L.LatLngTuple, { icon:makePin(isStartUserStop ? "userStop" : "start",routeStops[0].name), zIndexOffset:1000 }).addTo(lg2)
+        .bindPopup(`<div style="font-family:Inter,sans-serif"><b>${routeStops[0].name}</b><br><span style="color:#16A34A;font-size:11px;font-weight:600">📍 Starting Point${isStartUserStop ? " (Your Stop)" : ""}</span></div>`);
 
       const en = routeStops[routeStops.length-1];
-      L.marker([en.lat,en.lng] as L.LatLngTuple, { icon:makePin("end",en.name), zIndexOffset:1000 }).addTo(lg2)
-        .bindPopup(`<div style="font-family:Inter,sans-serif"><b>${en.name}</b><br><span style="color:#DC2626;font-size:11px;font-weight:600">🏁 Destination</span></div>`);
+      const isEndUserStop = userBoardingStop && en.name.toLowerCase().trim() === userBoardingStop.toLowerCase().trim();
+      L.marker([en.lat,en.lng] as L.LatLngTuple, { icon:makePin(isEndUserStop ? "userStop" : "end",en.name), zIndexOffset:1000 }).addTo(lg2)
+        .bindPopup(`<div style="font-family:Inter,sans-serif"><b>${en.name}</b><br><span style="color:#DC2626;font-size:11px;font-weight:600">🏁 Destination${isEndUserStop ? " (Your Stop)" : ""}</span></div>`);
 
       mapRef.current?.fitBounds(L.latLngBounds(path).pad(0.12), { animate:true, duration:0.8 });
     })();
@@ -426,6 +438,56 @@ export default function TrackingMap({
       map.panTo([b.lat, b.lng], { animate:true, duration:0.5 });
     }
   }, [busLocations, selectedBusId]);
+
+  /* ════ 4. Draw user/student live location ════ */
+  const userMarkerRef = useRef<L.Marker | null>(null);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (userLocation && userLocation.lat !== 0 && userLocation.lng !== 0) {
+      const icon = L.divIcon({
+        html: `
+          <div style="position:relative;display:flex;align-items:center;justify-content:center;">
+            <div style="position:absolute;inset:-8px;border-radius:50%;border:3px solid rgba(22,163,74,0.35);animation:__bpulse 1.5s ease-in-out infinite;"></div>
+            <div style="
+              width:32px;height:32px;
+              background:linear-gradient(145deg,#16A34A,#4ADE80);
+              border-radius:50%;
+              border:2.5px solid white;
+              box-shadow:0 4px 12px rgba(22,163,74,0.4);
+              display:flex;align-items:center;justify-content:center;
+            ">
+              <span style="font-size:12px">🚶</span>
+            </div>
+            <div style="
+              position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);
+              background:#16A34A;color:white;
+              padding:1px 6px;border-radius:10px;
+              font-size:9px;font-weight:800;white-space:nowrap;
+              font-family:Inter,system-ui,sans-serif;
+              box-shadow:0 1px 4px rgba(0,0,0,0.15);
+            ">You</div>
+          </div>`,
+        className: "",
+        iconSize: [32, 40],
+        iconAnchor: [16, 16],
+      });
+
+      if (userMarkerRef.current) {
+        userMarkerRef.current.setLatLng([userLocation.lat, userLocation.lng]);
+      } else {
+        userMarkerRef.current = L.marker([userLocation.lat, userLocation.lng], { icon })
+          .addTo(map)
+          .bindPopup('<div style="font-family:Inter,sans-serif;font-weight:700">📍 Your Location</div>');
+      }
+    } else {
+      if (userMarkerRef.current) {
+        map.removeLayer(userMarkerRef.current);
+        userMarkerRef.current = null;
+      }
+    }
+  }, [userLocation]);
 
   return (
     <div style={{ position:"relative", width:"100%", height:"520px" }}>
